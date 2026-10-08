@@ -1,6 +1,6 @@
 import type { Manga } from '../types/manga'
 
-const API_URL = 'https://api.mangadex.org'
+const API_URL = '/api/mangadex'
 
 export const MANGA_PER_PAGE = 20
 
@@ -99,13 +99,17 @@ export async function searchManga({
   signal,
 }: SearchMangaOptions = {}): Promise<MangaResponse> {
   const params = new URLSearchParams({
+    path: 'manga',
     limit: String(MANGA_PER_PAGE),
     offset: String(offset),
     'includes[]': 'cover_art',
   })
 
   if (query) {
-    params.set('title', query)
+    params.set(
+      'title',
+      query,
+    )
   }
 
   if (status) {
@@ -128,7 +132,7 @@ export async function searchManga({
   )
 
   return fetchJson<MangaResponse>(
-    `${API_URL}/manga?${params.toString()}`,
+    `${API_URL}?${params.toString()}`,
     signal,
   )
 }
@@ -136,9 +140,13 @@ export async function searchManga({
 export async function getMangaTags(
   signal?: AbortSignal,
 ): Promise<MangaTag[]> {
+  const params = new URLSearchParams({
+    path: 'manga/tag',
+  })
+
   const result =
     await fetchJson<MangaTagResponse>(
-      `${API_URL}/manga/tag`,
+      `${API_URL}?${params.toString()}`,
       signal,
     )
 
@@ -149,12 +157,10 @@ export async function getMangaById(
   id: string,
   signal?: AbortSignal,
 ): Promise<Manga> {
-  const params = new URLSearchParams()
-
-  params.append(
-    'includes[]',
-    'cover_art',
-  )
+  const params = new URLSearchParams({
+    path: `manga/${id}`,
+    'includes[]': 'cover_art',
+  })
 
   params.append(
     'includes[]',
@@ -168,7 +174,7 @@ export async function getMangaById(
 
   const result =
     await fetchJson<MangaDetailsResponse>(
-      `${API_URL}/manga/${id}?${params.toString()}`,
+      `${API_URL}?${params.toString()}`,
       signal,
     )
 
