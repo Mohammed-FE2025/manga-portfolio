@@ -21,9 +21,18 @@ export function getMangaCover(
       relationship.type === 'cover_art',
   )
 
-  if (!cover?.attributes?.fileName) {
+  const fileName =
+    cover?.attributes?.fileName
+
+  if (!fileName) {
     return null
   }
 
-  return `https://uploads.mangadex.org/covers/${manga.id}/${cover.attributes.fileName}.${size}.jpg`
+  const params = new URLSearchParams({
+    mangaId: manga.id,
+    fileName,
+    size,
+  })
+
+  return `/api/cover?${params.toString()}`
 }
